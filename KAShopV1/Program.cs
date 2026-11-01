@@ -1,4 +1,10 @@
 
+using KASHOP.BLL;
+using KASHOP.DAL.Data;
+using KASHOP.DAL.Models;
+using KASHOP.DAL.Repositories;
+using Microsoft.EntityFrameworkCore;
+
 namespace KAShopV1
 {
     public class Program
@@ -8,6 +14,12 @@ namespace KAShopV1
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<IGenericRepository<Category>, GenericRepository<Category>>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

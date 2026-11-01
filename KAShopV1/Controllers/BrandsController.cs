@@ -10,21 +10,21 @@ namespace KAShop.PL.Controllers
     [ApiController]
     public class BrandsController : ControllerBase
     {
-        GenericRepository<Brand> repo = new GenericRepository<Brand>();
+        //GenericRepository<Brand> repo = new GenericRepository<Brand>();
 
-        [HttpGet("")]
-        public IActionResult Index()
-        {
-            var brands = repo.Get();
-            return Ok(brands);
-        }
+        //[HttpGet("")]
+        //public IActionResult Index()
+        //{
+        //    var brands = repo.Get();
+        //    return Ok(brands);
+        //}
 
 
-        [HttpPost("")]
-        public IActionResult Create(Brand brand)
-        {
-            repo.Create(brand);
-            return Ok();
-        }
+        //[HttpPost("")]
+        //public IActionResult Create(Brand brand)
+        //{
+        //    repo.Create(brand);
+        //    return Ok();
+        //}
     }
 }
