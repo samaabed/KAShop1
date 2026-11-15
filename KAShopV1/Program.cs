@@ -1,9 +1,11 @@
 
+using KAShop.PL.Utils;
 using KASHOP.BLL;
 using KASHOP.BLL.Settings;
 using KASHOP.DAL.Data;
 using KASHOP.DAL.Models;
 using KASHOP.DAL.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -12,7 +14,7 @@ namespace KAShopV1
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,10 @@ namespace KAShopV1
 
             builder.Services.AddScoped<IGenericRepository<Category>, GenericRepository<Category>>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<IFileService, FileService>();
+            builder.Services.AddScoped<IGenericRepository<Product>, GenericRepository<Product>>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<ISeedData, RoleSeedData>();
 
 
             builder.Services.AddControllers();
@@ -40,6 +46,19 @@ namespace KAShopV1
                 };
             });
 
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.Password.RequiredLength = 8;
+                options.Password.RequireDigit = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            }).AddEntityFrameworkStores<ApplicationDbContext>()
+              .AddDefaultTokenProviders();
+
             MapsterConfig.RegisterMappings();
 
             var app = builder.Build();
@@ -55,9 +74,18 @@ namespace KAShopV1
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
+            app.UseStaticFiles();
 
             app.MapControllers();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var seeders = scope.ServiceProvider.GetServices<ISeedData>();
+                foreach (var seeder in seeders)
+                {
+                    await seeder.DataSeed();
+                }
+            }
 
             app.Run();
         }

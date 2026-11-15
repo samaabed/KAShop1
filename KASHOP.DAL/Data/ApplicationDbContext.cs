@@ -1,4 +1,5 @@
 ﻿using KASHOP.DAL.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using System;
@@ -9,15 +10,35 @@ using System.Threading.Tasks;
 
 namespace KASHOP.DAL.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Category> Categories { get; set; }
         public DbSet<Brand> Brands { get; set; }
         public DbSet<CategoryTranslation> CategoriesTranslations { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductTranslation> ProductTranslations { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
         {
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.Property(p => p.Price).HasPrecision(9, 2);
+                entity.HasOne(p => p.Category).WithMany(c  => c.Products).HasForeignKey(p => p.CategoryId).OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<ProductTranslation>(entity =>
+            {
+
+                entity.Property(t => t.Name).HasMaxLength(200);
+                entity.Property(t => t.Language).HasMaxLength(5);
+            });
         }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -25,6 +46,6 @@ namespace KASHOP.DAL.Data
         //    base.OnConfiguring(optionsBuilder);
         //    optionsBuilder.UseSqlServer("Data Source=.; Database=KASHOP1; Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False;Command Timeout=30");
         //}
-             
+
     }
 }
