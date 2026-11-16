@@ -1,4 +1,5 @@
 ﻿using KASHOP.DAL.DTO.Requests;
+using KASHOP.DAL.DTO.Responses;
 using KASHOP.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -13,5 +14,6 @@ namespace KASHOP.BLL
     {
 
         Task<(bool Success, List<string> Errors)> RegisterAsync(RegisterRequest request);
+        Task<(bool Success, List<string> Errors, LoginResponse Reponse)> LoginAsync(LoginRequest request);
     }
 }

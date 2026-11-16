@@ -8,7 +8,7 @@ namespace KAShop.PL.Utils
 
         public RoleSeedData(RoleManager<IdentityRole> roleManager)
         {
-            roleManager = _roleManager;
+            _roleManager = roleManager;
         }
 
         public async Task DataSeed()
