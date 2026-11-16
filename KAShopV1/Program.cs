@@ -25,6 +25,7 @@ namespace KAShopV1
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
             builder.Services.AddScoped<IGenericRepository<Category>, GenericRepository<Category>>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IFileService, FileService>();
@@ -83,6 +84,8 @@ namespace KAShopV1
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
                 };
             });
+
+            builder.Services.AddHttpContextAccessor();
 
             MapsterConfig.RegisterMappings();
 
